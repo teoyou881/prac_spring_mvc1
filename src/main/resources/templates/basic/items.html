@@ -1,0 +1,55 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+	<meta charset = "utf-8">
+	<link th:href = "@{/css/bootstrap.min.css}"
+	      href = "../css/bootstrap.min.css"
+	      rel = "stylesheet">
+</head>
+<body>
+<div class = "container"
+     style = "max-width: 600px">
+	<div class = "py-5 text-center"><h2>Products List</h2></div>
+	<div class = "row">
+		<div class = "col">
+			<button class = "btn btn-primary float-end"
+			        onclick = "location.href='addForm.html'"
+			        th:onclick = "|location.href='@{/basic/items/add}'|"
+			        type = "button">Register Product
+			</button>
+		</div>
+	</div>
+	<hr class = "my-4">
+	<div>
+		<table class = "table">
+			<thead>
+			<tr>
+				<th>ID</th>
+				<th>Name</th>
+				<th>Price</th>
+				<th>Quantity</th>
+			</tr>
+			</thead>
+			<tbody>
+			<tr th:each = "item : ${items}">
+				<td>
+					<a href = "item.html"
+					   th:href = "@{/basic/items/{itemId} (itemId=${item.id})}"
+					   th:text = "${item.id}">Member ID
+					</a>
+				</td>
+				<td>
+					<a href = "item.html"
+					   th:href = "@{|/basic/items/${item.id}?query=test|}"
+					   th:text = "${item.name}">Name
+					</a>
+				</td>
+				<td th:text = "${item.price}">10000</td>
+				<td th:text = "${item.quantity}">10</td>
+			</tr>
+			</tbody>
+		</table>
+	</div>
+</div> <!-- /container -->
+</body>
+</html>
