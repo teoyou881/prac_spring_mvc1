@@ -36,7 +36,8 @@ public class BasicItemController {
         return "basic/item";
     }
     
-    @GetMapping("/add") public String addForm() {
+    @GetMapping("/add")
+    public String addForm() {
         return "basic/addForm";
     }
     
@@ -81,6 +82,25 @@ public class BasicItemController {
     ) {
         itemRepository.save(item);
         return "basic/item";
+    }
+    
+    @GetMapping("/{itemId}/edit")
+    public String editForm(
+        @PathVariable Long itemId, Model model
+    ) {
+        Item item = itemRepository.findById(itemId);
+        model.addAttribute("item", item);
+        return "basic/editForm";
+    }
+    
+    @PostMapping("/{itemId}/edit")
+    public String edit(
+        @PathVariable Long itemId,
+        Item item
+    ) {
+        Item findItem = itemRepository.findById(itemId);
+        itemRepository.update(itemId, item);
+        return "redirect:/basic/items/{itemId}";
     }
     
     //data for test
