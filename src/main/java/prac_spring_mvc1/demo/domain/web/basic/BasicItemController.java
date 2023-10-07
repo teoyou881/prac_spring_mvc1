@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import prac_spring_mvc1.demo.domain.item.Item;
 import prac_spring_mvc1.demo.domain.item.ItemRepository;
 
@@ -87,10 +88,18 @@ public class BasicItemController {
     @PostMapping("/add")
     public String addItemV4(
         // Can omit @ModelAttribute
-        Item item
+        Item item,
+        // RedirectAttributes is used to pass data to the redirected URL.
+        // It does all the basic URL encoding.
+        RedirectAttributes redirectAttributes
     ) {
-        itemRepository.save(item);
-        return "redirect:/basic/items/" + item.getId();
+        Item savedItem = itemRepository.save(item);
+        /* itemid should be replaced with the name of the variable in the path.
+         * the thing like status which is not replaced with anything must be added as query parameter.*/
+        redirectAttributes.addAttribute("itemId", savedItem.getId());
+        redirectAttributes.addAttribute("status", true);
+        return "redirect:/basic/items/{itemId}";
+        ///basic/items/3?status=true
     }
     
     @GetMapping("/{itemId}/edit")

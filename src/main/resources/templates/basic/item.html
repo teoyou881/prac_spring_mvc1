@@ -12,7 +12,13 @@
 </head>
 <body>
 <div class = "container">
-	<div class = "py-5 text-center"><h2>Product Detail</h2></div>
+	<div class = "py-5 text-center">
+		<h2>Product Detail</h2>
+	</div>
+	
+	<h2 th:if = "${param.status}"
+	    th:text = "'succeeded to save'"></h2>
+	
 	<div>
 		<label for = "itemId">Product ID</label>
 		<input type = "text"
