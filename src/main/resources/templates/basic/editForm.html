@@ -14,44 +14,36 @@
 	<div class = "py-5 text-center"><h2>Edit Product Form</h2></div>
 	<form action = "item.html"
 	      th:action
+	      th:object = "${item}"
 	      method = "post">
 		<div>
 			<label for = "id">Product ID</label>
 			<input type = "text"
-			       id = "id"
-			       name = "id"
 			       class = "form-control"
-			       value = "1"
-			       th:value = "${item.id}"
+			       th:field = "*{id}"
 			       readonly>
 		</div>
 		<div>
 			
 			<label for = "name">Name</label>
 			<input type = "text"
-			       id = "name"
-			       name = "name"
 			       class = "form-control"
-			       value = "상품A"
-			       th:value = "${item.name}">
+			       th:field = "*{name}"
+			>
 		</div>
 		<div>
 			<label for = "price">Price</label>
 			<input type = "text"
-			       id = "price"
-			       name = "price"
 			       class = "form-control"
-			       value = "10000"
-			       th:value = "${item.price}">
+			       th:field = "*{price}"
+			       >
 		</div>
 		<div>
 			<label for = "quantity">Quantity</label>
 			<input type = "text"
-			       id = "quantity"
-			       name = "quantity"
 			       class = "form-control"
-			       value = "10"
-			       th:value = "${item.quantity}">
+			       th:field = "*{quantity}"
+			       >
 		</div>
 		<hr class = "my-4">
 		<div class = "row">

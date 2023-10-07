@@ -17,29 +17,27 @@
 	<!--	      th:action = "@{/basic/items/add}"-->
 	<form action = "item.html"
 	      th:action
+	      th:object = "${item}"
 	      method = "post">
 		<div>
 			
 			<label for = "name">Name</label>
 			<input class = "form-control"
-			       id = "name"
-			       name = "name"
+			       th:field = "*{name}"
 			       placeholder = "Please enter the name"
 			       type = "text">
 		</div>
 		<div>
 			<label for = "price">Price</label>
 			<input class = "form-control"
-			       id = "price"
-			       name = "price"
+			       th:field = "*{price}"
 			       placeholder = "Please enter the price"
 			       type = "text">
 		</div>
 		<div>
 			<label for = "quantity">Quantity</label>
 			<input class = "form-control"
-			       id = "quantity"
-			       name = "quantity"
+			       th:field = "*{quantity}"
 			       placeholder = "Please enter the quantity"
 			       type = "text">
 		</div>
