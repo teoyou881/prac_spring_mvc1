@@ -61,13 +61,13 @@ public class BasicItemController {
     
     //    @PostMapping("/add")
     public String addItemV2(
-        // @ModelAttribute
-        // 1. create an object and bind it to the passed parameters.
-        // 2. do model.addAttribute(); automatically.
-        /*ModelAttribute("hello") =>  model.add~~("heelo", item)
-         *If there is no name like ModelAttribute =>
-         * Only the first leading character of the class name that follows is changed to lowercase.
-         *  @ModelAttribute HelloData item  -->  model.add~~("helloData", item)*/
+        /* @ModelAttribute
+         1. create an object and bind it to the passed parameters.
+         2. do model.addAttribute(); automatically.
+        ModelAttribute("hello") =>  model.add~~("heelo", item)
+         If there is no name like ModelAttribute =>
+          Only the first leading character of the class name that follows is changed to lowercase.
+           @ModelAttribute HelloData item  -->  model.add~~("helloData", item)*/
         @ModelAttribute
         Item item
     ) {
@@ -75,13 +75,22 @@ public class BasicItemController {
         return "basic/item";
     }
     
-    @PostMapping("/add")
+    //    @PostMapping("/add")
     public String addItemV3(
         // Can omit @ModelAttribute
         Item item
     ) {
         itemRepository.save(item);
         return "basic/item";
+    }
+    
+    @PostMapping("/add")
+    public String addItemV4(
+        // Can omit @ModelAttribute
+        Item item
+    ) {
+        itemRepository.save(item);
+        return "redirect:/basic/items/" + item.getId();
     }
     
     @GetMapping("/{itemId}/edit")
