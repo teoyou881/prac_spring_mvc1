@@ -1,7 +1,10 @@
 package prac_spring_mvc1.demo.domain.web.basic;
 
 import jakarta.annotation.PostConstruct;
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -12,8 +15,10 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+import prac_spring_mvc1.demo.domain.item.DeliveryCode;
 import prac_spring_mvc1.demo.domain.item.Item;
 import prac_spring_mvc1.demo.domain.item.ItemRepository;
+import prac_spring_mvc1.demo.domain.item.ItemType;
 
 @Controller
 @RequestMapping("/basic/items")
@@ -21,6 +26,37 @@ import prac_spring_mvc1.demo.domain.item.ItemRepository;
 public class BasicItemController {
     
     private final ItemRepository itemRepository;
+    
+    
+    /*The @ModelAttribute can be applied to a separate method in the controller like this.
+    This way, when that controller is requested, the value returned by regions will automatically be put into the model.
+    Of course, you can also use it this way and put the data directly into the model in each controller method.
+    * */
+    @ModelAttribute("regions")
+    public Map<String, String> regions(){
+        Map<String, String> regions = new LinkedHashMap<>();
+        regions.put("SEOUL", "seoul");
+        regions.put("BUSAN", "busan");
+        regions.put("JEJU", "jeju");
+        return regions;
+    }
+    
+    @ModelAttribute("itemTypes")
+    public ItemType[] itemTypes(){
+        // Passes the values in the enumeration to an array.
+        return ItemType.values();
+    }
+    
+    @ModelAttribute("deliveryCodes")
+    public List<DeliveryCode> deliveryCodes() {
+        List<DeliveryCode> deliveryCodes = new ArrayList<>();
+        deliveryCodes.add(new DeliveryCode("FAST", "fast"));
+        deliveryCodes.add(new DeliveryCode("NORMAL", "default"));
+        deliveryCodes.add(new DeliveryCode("SLOW", "slow"));
+        
+        return deliveryCodes;
+    }
+    
     
     @GetMapping public String items(Model model) {
         List<Item> items = itemRepository.findAll();
