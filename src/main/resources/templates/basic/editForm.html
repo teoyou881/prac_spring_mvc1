@@ -47,7 +47,7 @@
 		</div>
 		
 		<hr class = "my-4">
-		<div>판매 여부</div>
+		<div>Sales status</div>
 		<div>
 			<div class = "form-check">
 				<input type = "checkbox"
@@ -77,6 +77,38 @@
 				</label>
 			</div>
 		</div>
+		
+		<!-- radio button -->
+		<hr class = "my-4">
+		<div>
+			<div>Category</div>
+			<div th:each = "type : ${itemTypes}"
+			     class = "form-check form-check-inline">
+				<input type = "radio"
+				       th:field = "*{itemType}"
+				       th:value = "${type.name()}"
+				       
+				       class = "form-check-input">
+				<label th:for = "${#ids.prev('itemType')}"
+				       th:text = "${type.description}"
+				       class = "form-check-label"> BOOK
+				</label>
+			</div>
+		</div>
+		
+		<!-- SELECT -->
+		<hr class = "my-4">
+		<div>
+			<div>Delivery</div>
+			<select th:field = "*{deliveryCode}" class = "form-select">
+				<option value = "">==Choose a shipping method==</option>
+				<option th:each = "deliveryCode : ${deliveryCodes}"
+				        th:value = "${deliveryCode.code}"
+				        th:text = "${deliveryCode.displayName}">FAST
+				</option>
+			</select>
+		</div>
+		
 		<div class = "row">
 			<div class = "col">
 				<button class = "w-100 btn btn-primary btn-lg"

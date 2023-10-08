@@ -133,6 +133,7 @@ public class BasicItemController {
         RedirectAttributes redirectAttributes
     ) {
         log.info("item.open={}", item.getOpen());
+        log.info("item.regions={}", item.getRegions());
         Item savedItem = itemRepository.save(item);
         /* itemid should be replaced with the name of the variable in the path.
          * the thing like status which is not replaced with anything must be added as query parameter.*/
