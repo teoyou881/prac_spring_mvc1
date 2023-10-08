@@ -6,6 +6,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -21,6 +22,7 @@ import prac_spring_mvc1.demo.domain.item.ItemRepository;
 import prac_spring_mvc1.demo.domain.item.ItemType;
 
 @Controller
+@Slf4j
 @RequestMapping("/basic/items")
 @RequiredArgsConstructor
 public class BasicItemController {
@@ -130,6 +132,7 @@ public class BasicItemController {
         // It does all the basic URL encoding.
         RedirectAttributes redirectAttributes
     ) {
+        log.info("item.open={}", item.getOpen());
         Item savedItem = itemRepository.save(item);
         /* itemid should be replaced with the name of the variable in the path.
          * the thing like status which is not replaced with anything must be added as query parameter.*/
