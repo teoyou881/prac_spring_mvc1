@@ -47,18 +47,16 @@
 		<div>판매 여부</div>
 		<div>
 			<div class = "form-check">
-<!--				<input type = "checkbox"-->
-<!--				       id = "open"-->
-<!--				       name = "open"-->
-<!--				       class = "form-check-input">-->
+				<!--				<input type = "checkbox"-->
+				<!--				       id = "open"-->
+				<!--				       name = "open"-->
+				<!--				       class = "form-check-input">-->
 				<!--hidden field-->
-<!--				<input type="hidden" name="_open" value="on"/>-->
-<!--				<label for = "open"-->
-<!--				       class = "form-check-label">판매 오픈-->
-<!--				</label>-->
+				<!--				<input type="hidden" name="_open" value="on"/>-->
+				<!--				<label for = "open"-->
+				<!--				       class = "form-check-label">판매 오픈-->
+				<!--				</label>-->
 				<input type = "checkbox"
-				       id = "open"
-				       name = "open"
 				       class = "form-check-input"
 				       th:field = "*{open}">
 				<label for = "open"
@@ -67,6 +65,23 @@
 			</div>
 		</div>
 		
+		<!-- multi checkbox -->
+		<hr class = "my-4">
+		<div>
+			<div>등록 지역</div>
+			<div th:each = "region : ${regions}"
+			     class = "form-check form-check-inline">
+				<input type = "checkbox"
+				       th:field = "*{regions}"
+				       th:value = "${region.key}"
+				       class = "form-check-input">
+				<label
+						th:for="${#ids.prev('regions')}"
+				       th:text = "${region.value}"
+				       class = "form-check-label">서울
+				</label>
+			</div>
+		</div>
 		
 		<div class = "row">
 			<div class = "col">
