@@ -56,14 +56,14 @@
 				       class = "form-check-input"
 				       th:field = "*{open}">
 				<label for = "open"
-				       class = "form-check-label">판매 오픈
+				       class = "form-check-label">Sales status
 				</label>
 			</div>
 		</div>
 		
 		<hr class = "my-4">
 		<div>
-			<div>등록 지역</div>
+			<div>Region</div>
 			<div th:each = "region : ${regions}"
 			     class = "form-check form-check-inline">
 				<input type = "checkbox"
@@ -73,7 +73,7 @@
 				<label
 					th:for="${#ids.prev('regions')}"
 					th:text = "${region.value}"
-					class = "form-check-label">서울
+					class = "form-check-label">Seoul
 				</label>
 			</div>
 		</div>
