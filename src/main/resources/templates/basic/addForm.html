@@ -11,7 +11,7 @@
 </head>
 <body>
 <div class = "container">
-	<div class = "py-5 text-center"><h2>Register Product Form</h2></div>
+	<div class = "py-5 text-center"><h2 th:text="#{page.addItem}">Register Product Form</h2></div>
 	<h4 class = "mb-3">Product</h4>
 	<!--	      같은 url이면 생략해도 된다.-->
 	<!--	      th:action = "@{/basic/items/add}"-->
@@ -21,21 +21,21 @@
 	      method = "post">
 		<div>
 			
-			<label for = "name">Name</label>
+			<label for = "name" th:text="#{label.item.itemName}">Name</label>
 			<input class = "form-control"
 			       th:field = "*{name}"
 			       placeholder = "Please enter the name"
 			       type = "text">
 		</div>
 		<div>
-			<label for = "price">Price</label>
+			<label for = "price" th:text="#{label.item.price}">Price</label>
 			<input class = "form-control"
 			       th:field = "*{price}"
 			       placeholder = "Please enter the price"
 			       type = "text">
 		</div>
 		<div>
-			<label for = "quantity">Quantity</label>
+			<label for = "quantity" th:text="#{label.item.quantity}">Quantity</label>
 			<input class = "form-control"
 			       th:field = "*{quantity}"
 			       placeholder = "Please enter the quantity"
@@ -44,7 +44,7 @@
 		<hr class = "my-4">
 		
 		<!-- single checkbox -->
-		<div>Sales status</div>
+		<div  th:text="#{label.item.salesStatus}">Sales status</div>
 		<div>
 			<div class = "form-check">
 				<!--				<input type = "checkbox"-->
@@ -60,7 +60,8 @@
 				       class = "form-check-input"
 				       th:field = "*{open}">
 				<label for = "open"
-				       class = "form-check-label">Sales status
+				       th:text="#{label.item.salesStatus}"
+				       class = "form-check-label">판매 상태
 				</label>
 			</div>
 		</div>
@@ -68,7 +69,7 @@
 		<!-- multi checkbox -->
 		<hr class = "my-4">
 		<div>
-			<div>Region</div>
+			<div th:text="#{label.item.region}">Region</div>
 			<div th:each = "region : ${regions}"
 			     class = "form-check form-check-inline">
 				<input type = "checkbox"
@@ -86,7 +87,7 @@
 		<!-- radio button -->
 		<hr class = "my-4">
 		<div>
-			<div>Category</div>
+			<div th:text="#{label.item.category}">Category</div>
 			<div th:each = "type : ${itemTypes}"
 			     class = "form-check form-check-inline">
 				<input type = "radio"
@@ -104,7 +105,7 @@
 		<!-- SELECT -->
 		<hr class = "my-4">
 		<div>
-			<div>Delivery</div>
+			<div th:text="#{label.item.delivery}">Delivery</div>
 			<select th:field = "*{deliveryCode}" class = "form-select">
 				<option value = "">==Choose a shipping method==</option>
 				<option th:each = "deliveryCode : ${deliveryCodes}"
@@ -117,7 +118,8 @@
 		<div class = "row">
 			<div class = "col">
 				<button class = "w-100 btn btn-primary btn-lg"
-				        type = "submit">Product register
+				        type = "submit"
+						th:text="#{page.addItem}">Product register
 				</button>
 			</div>
 			
@@ -125,7 +127,8 @@
 				<button class = "w-100 btn btn-secondary btn-lg"
 				        onclick = "location.href='items.html'"
 				        th:onclick = "|location.href='@{/basic/items}'|"
-				        type = "button">Cancel
+				        type = "button"
+						th:text="#{button.cancel}">Cancel
 				</button>
 			</div>
 		</div>

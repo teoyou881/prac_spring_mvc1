@@ -4,9 +4,12 @@ import jakarta.annotation.PostConstruct;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.MessageSource;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -59,8 +62,14 @@ public class BasicItemController {
         return deliveryCodes;
     }
     
+    @Autowired
+    private MessageSource messageSource;
     
-    @GetMapping public String items(Model model) {
+    @GetMapping public String items(Model model, Locale locale  ) {
+//        log.info(locale.getCountry());
+//        log.info(locale.getLanguage());
+//        log.info("Resolved Locale: " + locale);
+//        log.info(messageSource.getMessage("hello", null, Locale.ENGLISH));
         List<Item> items = itemRepository.findAll();
         model.addAttribute("items", items);
         return "basic/items";
