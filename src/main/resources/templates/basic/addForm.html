@@ -19,37 +19,47 @@
 	<!--	      같은 url이면 생략해도 된다.-->
 	<!--	      th:action = "@{/basic/items/add}"-->
 	<form action = "item.html" method = "post" th:action th:object = "${item}">
-		<div th:if = "${errors?.containsKey('globalError')}">
-			<p class = "field-error" th:text = "${errors['globalError']}">error messages</p>
+		
+		<!--		before use BindingResult-->
+		<!--<div th:if = "${errors?.containsKey('globalError')}"><p class = "field-error" th:text = "${errors['globalError']}">error messages</p></div>-->
+		
+		<div th:if = "${#fields.hasGlobalErrors}">
+			<p class = "field-error" th:each = "err : ${#fields.globalErrors()}" th:text = "${err}">
+				error messages </p>
 		</div>
 		<div>
 			<label for = "name" th:text = "#{label.item.itemName}">Name
 			</label>
-			<input class = "form-control" placeholder = "Please enter the name"
-			       th:class = "${errors?.containsKey('name')}? 'form-control field-error':'form-control'"
+			
+			<!--    before use BindingResult    -->
+			<!--	th:class = "${errors?.containsKey('name')}? 'form-control field-error':'form-control'"  -->
+			<input class = "form-control" placeholder = "Please enter the name" th:errorclass = "field-error"
 			       th:field = "*{name}" type = "text"/>
-			<div th:if = "${errors?.containsKey('name')}">
-				<p class = "field-error" th:text = "${errors['name']}">error messages</p>
+			
+			<!--		before use BindingResult-->
+			<!--    <div class = "field-error" th:if = "${errors?.containsKey('name')}" th:text = "${errors['name']}">error messages</div>-->
+			
+			<!--		if there is an error on name filed, it writes code th:text="" automatically-->
+			<div class = "field-error" th:errors = "*{name}">
+				error messages
 			</div>
 		</div>
 		<div>
 			<label for = "price" th:text = "#{label.item.price}">Price
 			</label>
-			<input class = "form-control" placeholder = "Please enter the price"
-			       th:class = "${errors?.containsKey('price')}? 'form-control field-error':'form-control'"
+			<input class = "form-control" placeholder = "Please enter the price" th:errorclass = "field-error"
 			       th:field = "*{price}" type = "text"/>
-			<div th:if = "${errors?.containsKey('price')}">
-				<p class = "field-error" th:text = "${errors['price']}">error messages</p>
+			<div class = "field-error" th:errors = "*{price}">
+				error messages
 			</div>
 		</div>
 		<div>
 			<label for = "quantity" th:text = "#{label.item.quantity}">Quantity
 			</label>
 			<input class = "form-control" placeholder = "Please enter the quantity"
-			       th:classappend = "${errors?.containsKey('quantity')} ? 'field-error' : _"
-			       th:field = "*{quantity}" type = "text"/>
-			<div th:if = "${errors?.containsKey('quantity')}">
-				<p class = "field-error" th:text = "${errors['quantity']}">error messages</p>
+			       th:errorclass = "field-error" th:field = "*{quantity}" type = "text"/>
+			<div class = "field-error" th:errors = "*{quantity}">
+				error messages
 			</div>
 		</div>
 		<hr class = "my-4">

@@ -12,6 +12,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.util.StringUtils;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.FieldError;
+import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -110,7 +113,8 @@ public class BasicItemController {
         return "basic/item";
     }
     
-    @PostMapping("/add") public String addItemV4(
+    //    @PostMapping("/add")
+    public String addItemV4(
         // Can omit @ModelAttribute
         Item item,
         // RedirectAttributes is used to pass data to the redirected URL.
@@ -144,6 +148,54 @@ public class BasicItemController {
         // if there is an error, return to the form
         if (!errors.isEmpty()) {
             model.addAttribute("errors", errors);
+            return "basic/addForm";
+        }
+        
+        // success case below
+        
+        Item savedItem = itemRepository.save(item);
+        /* itemid should be replaced with the name of the variable in the path.
+         * the thing like status which is not replaced with anything must be added as query parameter.*/
+        redirectAttributes.addAttribute("itemId", savedItem.getId());
+        redirectAttributes.addAttribute("status", true);
+        return "redirect:/basic/items/{itemId}";
+        ///basic/items/3?status=true
+    }
+    
+    
+    // with BindingResult
+    @PostMapping("/add")
+    public String addItemV5(
+        //BindingResult The position of the bindingResult parameter must be after the @ModelAttribute Item item.
+        Item item, BindingResult bindingResult, RedirectAttributes redirectAttributes) {
+        
+        // validation logic
+        if (!StringUtils.hasText(item.getName())) {
+            bindingResult.addError(new FieldError("item", "name", "Product name is required"));
+        }
+        if (item.getPrice() == null || item.getPrice() < 1000 || item.getPrice() > 1000000) {
+            bindingResult.addError(
+                new FieldError("item", "price", "Price must be between 1000 and 1000000"));
+        }
+        if (item.getQuantity() == null || item.getQuantity() < 1 || item.getQuantity() > 9999) {
+            bindingResult.addError(
+                new FieldError("item", "quantity", "Quantity must be between 1 and 9999"));
+        }
+        
+        // for complicated rules
+        if (item.getPrice() != null && item.getQuantity() != null) {
+            int resultPrice = item.getPrice() * item.getQuantity();
+            if (resultPrice < 10000) {
+                // global error is not filed error, so you should use ObjectError
+                bindingResult.addError(new ObjectError("item",
+                                                       "Total price must be over 10000. Current price is "
+                                                           + resultPrice));
+            }
+        }
+        
+        // if there is an error, return to the form
+        if (bindingResult.hasErrors()) {
+            log.info("errors={}", bindingResult);
             return "basic/addForm";
         }
         
