@@ -2,16 +2,16 @@ package prac_spring_mvc1.demo.domain.web.basic;
 
 import jakarta.annotation.PostConstruct;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.MessageSource;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -32,13 +32,11 @@ public class BasicItemController {
     
     private final ItemRepository itemRepository;
     
-    
     /*The @ModelAttribute can be applied to a separate method in the controller like this.
     This way, when that controller is requested, the value returned by regions will automatically be put into the model.
     Of course, you can also use it this way and put the data directly into the model in each controller method.
     * */
-    @ModelAttribute("regions")
-    public Map<String, String> regions(){
+    @ModelAttribute("regions") public Map<String, String> regions() {
         Map<String, String> regions = new LinkedHashMap<>();
         regions.put("SEOUL", "seoul");
         regions.put("BUSAN", "busan");
@@ -46,14 +44,12 @@ public class BasicItemController {
         return regions;
     }
     
-    @ModelAttribute("itemTypes")
-    public ItemType[] itemTypes(){
+    @ModelAttribute("itemTypes") public ItemType[] itemTypes() {
         // Passes the values in the enumeration to an array.
         return ItemType.values();
     }
     
-    @ModelAttribute("deliveryCodes")
-    public List<DeliveryCode> deliveryCodes() {
+    @ModelAttribute("deliveryCodes") public List<DeliveryCode> deliveryCodes() {
         List<DeliveryCode> deliveryCodes = new ArrayList<>();
         deliveryCodes.add(new DeliveryCode("FAST", "fast"));
         deliveryCodes.add(new DeliveryCode("NORMAL", "default"));
@@ -62,42 +58,26 @@ public class BasicItemController {
         return deliveryCodes;
     }
     
-    @Autowired
-    private MessageSource messageSource;
-    
-    @GetMapping public String items(Model model, Locale locale  ) {
-//        log.info(locale.getCountry());
-//        log.info(locale.getLanguage());
-//        log.info("Resolved Locale: " + locale);
-//        log.info(messageSource.getMessage("hello", null, Locale.ENGLISH));
+    @GetMapping public String items(Model model, Locale locale) {
         List<Item> items = itemRepository.findAll();
         model.addAttribute("items", items);
         return "basic/items";
     }
     
-    @GetMapping("/{itemId}")
-    public String item(
-        @PathVariable
-        Long itemId, Model model) {
+    @GetMapping("/{itemId}") public String item(@PathVariable Long itemId, Model model) {
         Item item = itemRepository.findById(itemId);
         model.addAttribute("item", item);
         return "basic/item";
     }
     
-    @GetMapping("/add")
-    public String addForm( Model model) {
+    @GetMapping("/add") public String addForm(Model model) {
         model.addAttribute("item", new Item());
         return "basic/addForm";
     }
     
     //    @PostMapping("/add")
-    public String addItemV1(
-        @RequestParam
-        String itemName,
-        @RequestParam
-        int price,
-        @RequestParam
-        Integer quantity, Model model) {
+    public String addItemV1(@RequestParam String itemName, @RequestParam int price,
+                            @RequestParam Integer quantity, Model model) {
         
         Item item = new Item(itemName, price, quantity);
         
@@ -117,9 +97,7 @@ public class BasicItemController {
          If there is no name like ModelAttribute =>
           Only the first leading character of the class name that follows is changed to lowercase.
            @ModelAttribute HelloData item  -->  model.add~~("helloData", item)*/
-        @ModelAttribute
-        Item item
-    ) {
+        @ModelAttribute Item item) {
         itemRepository.save(item);
         return "basic/item";
     }
@@ -127,22 +105,50 @@ public class BasicItemController {
     //    @PostMapping("/add")
     public String addItemV3(
         // Can omit @ModelAttribute
-        Item item
-    ) {
+        Item item) {
         itemRepository.save(item);
         return "basic/item";
     }
     
-    @PostMapping("/add")
-    public String addItemV4(
+    @PostMapping("/add") public String addItemV4(
         // Can omit @ModelAttribute
         Item item,
         // RedirectAttributes is used to pass data to the redirected URL.
         // It does all the basic URL encoding.
         RedirectAttributes redirectAttributes
-    ) {
-        log.info("item.open={}", item.getOpen());
-        log.info("item.regions={}", item.getRegions());
+        , Model model) {
+        
+        // save validation error data
+        Map<String, String> errors = new HashMap<>();
+        
+        // validation logic
+        if (!StringUtils.hasText(item.getName())) {
+            errors.put("name", "Product name is required");
+        }
+        if (item.getPrice() == null || item.getPrice() < 1000 || item.getPrice() > 1000000) {
+            errors.put("price", "Price must be between 1000 and 1000000");
+        }
+        if (item.getQuantity() == null || item.getQuantity() < 1 || item.getQuantity() > 9999) {
+            errors.put("quantity", "Quantity must be between 1 and 9999");
+        }
+        
+        // for complicated rules
+        if (item.getPrice() != null && item.getQuantity() != null) {
+            int resultPrice = item.getPrice() * item.getQuantity();
+            if (resultPrice < 10000) {
+                errors.put("globalError",
+                           "Total price must be over 10000. Current price is " + resultPrice);
+            }
+        }
+        
+        // if there is an error, return to the form
+        if (!errors.isEmpty()) {
+            model.addAttribute("errors", errors);
+            return "basic/addForm";
+        }
+        
+        // success case below
+        
         Item savedItem = itemRepository.save(item);
         /* itemid should be replaced with the name of the variable in the path.
          * the thing like status which is not replaced with anything must be added as query parameter.*/
@@ -152,20 +158,13 @@ public class BasicItemController {
         ///basic/items/3?status=true
     }
     
-    @GetMapping("/{itemId}/edit")
-    public String editForm(
-        @PathVariable Long itemId, Model model
-    ) {
+    @GetMapping("/{itemId}/edit") public String editForm(@PathVariable Long itemId, Model model) {
         Item item = itemRepository.findById(itemId);
         model.addAttribute("item", item);
         return "basic/editForm";
     }
     
-    @PostMapping("/{itemId}/edit")
-    public String edit(
-        @PathVariable Long itemId,
-        Item item
-    ) {
+    @PostMapping("/{itemId}/edit") public String edit(@PathVariable Long itemId, Item item) {
         Item findItem = itemRepository.findById(itemId);
         itemRepository.update(itemId, item);
         return "redirect:/basic/items/{itemId}";
