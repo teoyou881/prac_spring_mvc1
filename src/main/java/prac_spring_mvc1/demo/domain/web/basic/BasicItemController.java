@@ -214,7 +214,7 @@ public class BasicItemController {
     
     
     // with BindingResult, maintain values in the form when there is an error.
-    @PostMapping("/add")
+//    @PostMapping("/add")
     public String addItemV6(
         //BindingResult The position of the bindingResult parameter must be after the @ModelAttribute Item item.
         Item item, BindingResult bindingResult, RedirectAttributes redirectAttributes) {
@@ -226,12 +226,12 @@ public class BasicItemController {
         if (item.getPrice() == null || item.getPrice() < 1000 || item.getPrice() > 1000000) {
             bindingResult.addError(
                 new FieldError("item", "price", item.getPrice(), false, null, null,
-                               "Product price is required"));
+                               "Price must be between 1000 and 1000000"));
         }
         if (item.getQuantity() == null || item.getQuantity() < 1 || item.getQuantity() > 9999) {
             bindingResult.addError(
                 new FieldError("item", "quantity", item.getQuantity(), false, null, null,
-                               "Product quantity is required"));
+                               "Quantity must be between 1 and 9999"));
         }
         
         // for complicated rules
@@ -262,7 +262,61 @@ public class BasicItemController {
         ///basic/items/3?status=true
     }
     
-    
+    // with BindingResult, maintain values in the form when there is an error.
+    // using errors.properties
+    @PostMapping("/add")
+    public String addItemV7(
+        //BindingResult The position of the bindingResult parameter must be after the @ModelAttribute Item item.
+        Item item, BindingResult bindingResult, RedirectAttributes redirectAttributes) {
+        // validation logic
+        if (!StringUtils.hasText(item.getName())) {
+            bindingResult.addError(new FieldError("item", "name", item.getName(), false,
+                                                  new String[]{
+                                                      "required.item.name",
+                                                      "required.default"
+                                                  }, null,
+                                                  null));
+        }
+        if (item.getPrice() == null || item.getPrice() < 1000 || item.getPrice() > 1000000) {
+            bindingResult.addError(
+                new FieldError("item", "price", item.getPrice(), false,
+                               new String[]{"range.item.price"}, new Object[]{1000, 1000000},
+                               null));
+        }
+        if (item.getQuantity() == null || item.getQuantity() < 1 || item.getQuantity() > 9999) {
+            bindingResult.addError(
+                new FieldError("item", "quantity", item.getQuantity(), false,
+                               new String[]{"max.item.quantity"}, new Object[]{1, 9999},
+                               null));
+        }
+        
+        // for complicated rules
+        if (item.getPrice() != null && item.getQuantity() != null) {
+            int resultPrice = item.getPrice() * item.getQuantity();
+            if (resultPrice < 10000) {
+                // global error is not filed error, so you should use ObjectError
+                bindingResult.addError(
+                    new ObjectError("item", new String[]{"totalPriceMin"},
+                                    new Object[]{10000, resultPrice}, null));
+            }
+        }
+        
+        // if there is an error, return to the form
+        if (bindingResult.hasErrors()) {
+            log.info("errors={}", bindingResult);
+            return "basic/addForm";
+        }
+        
+        // success case below
+        
+        Item savedItem = itemRepository.save(item);
+        /* itemid should be replaced with the name of the variable in the path.
+         * the thing like status which is not replaced with anything must be added as query parameter.*/
+        redirectAttributes.addAttribute("itemId", savedItem.getId());
+        redirectAttributes.addAttribute("status", true);
+        return "redirect:/basic/items/{itemId}";
+        ///basic/items/3?status=true
+    }
     
     
     @GetMapping("/{itemId}/edit") public String editForm(@PathVariable Long itemId, Model model) {
