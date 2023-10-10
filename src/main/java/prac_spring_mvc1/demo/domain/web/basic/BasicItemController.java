@@ -326,10 +326,19 @@ public class BasicItemController {
     public String addItemV8(
         //BindingResult The position of the bindingResult parameter must be after the @ModelAttribute Item item.
         Item item, BindingResult bindingResult, RedirectAttributes redirectAttributes) {
+        
+        // if there is an typeMismatch error, return to the form without checking file error and global error.
+        if (bindingResult.hasErrors()) {
+            log.info("errors={}", bindingResult);
+            return "basic/addForm";
+        }
+        
         // validation logic
-        if (!StringUtils.hasText(item.getName())) {
+        {
+            if (!StringUtils.hasText(item.getName())) {
 //            bindingResult.addError(new FieldError("item", "name", item.getName(), false, new String[]{"required.item.name", "required.default"}, null, null));
-            bindingResult.rejectValue("name", "required");
+                bindingResult.rejectValue("name", "required");
+            }
         }
         if (item.getPrice() == null || item.getPrice() < 1000 || item.getPrice() > 1000000) {
             bindingResult.rejectValue("price", "range", new Object[]{1000, 1000000}, null);
