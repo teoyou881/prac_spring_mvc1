@@ -113,6 +113,9 @@ public class BasicItemController {
         return "basic/item";
     }
     
+    
+    
+    
     //    @PostMapping("/add")
     public String addItemV4(
         // Can omit @ModelAttribute
@@ -162,9 +165,8 @@ public class BasicItemController {
         ///basic/items/3?status=true
     }
     
-    
     // with BindingResult
-    @PostMapping("/add")
+//    @PostMapping("/add")
     public String addItemV5(
         //BindingResult The position of the bindingResult parameter must be after the @ModelAttribute Item item.
         Item item, BindingResult bindingResult, RedirectAttributes redirectAttributes) {
@@ -209,6 +211,59 @@ public class BasicItemController {
         return "redirect:/basic/items/{itemId}";
         ///basic/items/3?status=true
     }
+    
+    
+    // with BindingResult, maintain values in the form when there is an error.
+    @PostMapping("/add")
+    public String addItemV6(
+        //BindingResult The position of the bindingResult parameter must be after the @ModelAttribute Item item.
+        Item item, BindingResult bindingResult, RedirectAttributes redirectAttributes) {
+        // validation logic
+        if (!StringUtils.hasText(item.getName())) {
+            bindingResult.addError(new FieldError("item", "name", item.getName(), false, null, null,
+                                                  "Product name is required"));
+        }
+        if (item.getPrice() == null || item.getPrice() < 1000 || item.getPrice() > 1000000) {
+            bindingResult.addError(
+                new FieldError("item", "price", item.getPrice(), false, null, null,
+                               "Product price is required"));
+        }
+        if (item.getQuantity() == null || item.getQuantity() < 1 || item.getQuantity() > 9999) {
+            bindingResult.addError(
+                new FieldError("item", "quantity", item.getQuantity(), false, null, null,
+                               "Product quantity is required"));
+        }
+        
+        // for complicated rules
+        if (item.getPrice() != null && item.getQuantity() != null) {
+            int resultPrice = item.getPrice() * item.getQuantity();
+            if (resultPrice < 10000) {
+                // global error is not filed error, so you should use ObjectError
+                bindingResult.addError(new ObjectError("item", null, null,
+                                                       "Total price must be over 10000. Current price is "
+                                                           + resultPrice));
+            }
+        }
+        
+        // if there is an error, return to the form
+        if (bindingResult.hasErrors()) {
+            log.info("errors={}", bindingResult);
+            return "basic/addForm";
+        }
+        
+        // success case below
+        
+        Item savedItem = itemRepository.save(item);
+        /* itemid should be replaced with the name of the variable in the path.
+         * the thing like status which is not replaced with anything must be added as query parameter.*/
+        redirectAttributes.addAttribute("itemId", savedItem.getId());
+        redirectAttributes.addAttribute("status", true);
+        return "redirect:/basic/items/{itemId}";
+        ///basic/items/3?status=true
+    }
+    
+    
+    
     
     @GetMapping("/{itemId}/edit") public String editForm(@PathVariable Long itemId, Model model) {
         Item item = itemRepository.findById(itemId);
