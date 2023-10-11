@@ -34,6 +34,8 @@ import prac_spring_mvc1.demo.domain.item.ItemType;
 public class BasicItemController {
     
     private final ItemRepository itemRepository;
+    private final ItemValidator itemValidator;
+    private final ErrorValidator errorValidator;
     
     /*The @ModelAttribute can be applied to a separate method in the controller like this.
     This way, when that controller is requested, the value returned by regions will automatically be put into the model.
@@ -112,8 +114,6 @@ public class BasicItemController {
         itemRepository.save(item);
         return "basic/item";
     }
-    
-    
     
     
     //    @PostMapping("/add")
@@ -322,7 +322,7 @@ public class BasicItemController {
     // with BindingResult, maintain values in the form when there is an error.
     // using errors.properties
     // BindingResult has already known model and target object. So you can use it like this.
-    @PostMapping("/add")
+    //@PostMapping("/add")
     public String addItemV8(
         //BindingResult The position of the bindingResult parameter must be after the @ModelAttribute Item item.
         Item item, BindingResult bindingResult, RedirectAttributes redirectAttributes) {
@@ -358,6 +358,37 @@ public class BasicItemController {
         // if there is an error, return to the form
         if (bindingResult.hasErrors()) {
             log.info("errors={}", bindingResult);
+            return "basic/addForm";
+        }
+        
+        // success case below
+        
+        Item savedItem = itemRepository.save(item);
+        /* itemid should be replaced with the name of the variable in the path.
+         * the thing like status which is not replaced with anything must be added as query parameter.*/
+        redirectAttributes.addAttribute("itemId", savedItem.getId());
+        redirectAttributes.addAttribute("status", true);
+        return "redirect:/basic/items/{itemId}";
+        ///basic/items/3?status=true
+    }
+    
+    // split validation logic and error handling
+    @PostMapping("/add")
+    public String addItemV9(
+        //BindingResult The position of the bindingResult parameter must be after the @ModelAttribute Item item.
+        Item item, BindingResult bindingResult, RedirectAttributes redirectAttributes) {
+        
+        // if there is an typeMismatch error, return to the form without checking file error and global error.
+        if (errorValidator.existError(bindingResult)) {
+            return "basic/addForm";
+        }
+        
+        if (itemValidator.supports(item.getClass())) {
+            itemValidator.validate(item, bindingResult);
+        }
+        
+        // if there is an error, return to the form
+        if (errorValidator.existError(bindingResult)) {
             return "basic/addForm";
         }
         
