@@ -15,7 +15,10 @@ import org.springframework.util.StringUtils;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
 import org.springframework.validation.ObjectError;
+import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -36,6 +39,16 @@ public class BasicItemController {
     private final ItemRepository itemRepository;
     private final ItemValidator itemValidator;
     private final ErrorValidator errorValidator;
+    
+    // From addItemV10
+    // Whenever a request is made to this controller, init() is called,
+    // which creates a WebDataBinder with a validator.
+    @InitBinder
+    public void init(WebDataBinder dataBinder) {
+        // dataBinder.addValidators(itemValidator);
+        // You can add multiple validators like this.
+        dataBinder.addValidators(itemValidator);
+    }
     
     /*The @ModelAttribute can be applied to a separate method in the controller like this.
     This way, when that controller is requested, the value returned by regions will automatically be put into the model.
@@ -373,7 +386,7 @@ public class BasicItemController {
     }
     
     // split validation logic and error handling
-    @PostMapping("/add")
+    //@PostMapping("/add")
     public String addItemV9(
         //BindingResult The position of the bindingResult parameter must be after the @ModelAttribute Item item.
         Item item, BindingResult bindingResult, RedirectAttributes redirectAttributes) {
@@ -389,6 +402,33 @@ public class BasicItemController {
         
         // if there is an error, return to the form
         if (errorValidator.existError(bindingResult)) {
+            return "basic/addForm";
+        }
+        
+        // success case below
+        
+        Item savedItem = itemRepository.save(item);
+        /* itemid should be replaced with the name of the variable in the path.
+         * the thing like status which is not replaced with anything must be added as query parameter.*/
+        redirectAttributes.addAttribute("itemId", savedItem.getId());
+        redirectAttributes.addAttribute("status", true);
+        return "redirect:/basic/items/{itemId}";
+        ///basic/items/3?status=true
+    }
+    
+    //    Validated is an annotation to run the validator.
+//    When this annotation is attached, the WebDataBinder will find and run the validator you registered earlier.
+//    However, if you register multiple validators, you need to distinguish which validator should be executed.
+//    This is where supports() is used.
+//    Here, supports(Item.class) is called, and since the result is true, validate() of ItemValidator is called.
+//    Translated with www.DeepL.com/Translator (free version)
+    @PostMapping("/add")
+    public String addItemV10(
+        //BindingResult The position of the bindingResult parameter must be after the @ModelAttribute Item item.
+        @Validated Item item, BindingResult bindingResult, RedirectAttributes redirectAttributes) {
+        
+        if (bindingResult.hasErrors()) {
+            log.info("errors={}", bindingResult);
             return "basic/addForm";
         }
         
