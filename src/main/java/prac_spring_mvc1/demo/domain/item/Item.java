@@ -10,6 +10,8 @@ import org.hibernate.validator.constraints.Range;
 //@Getter
 //@Setter
 @Data
+// not recommended
+// @ScriptAssert(lang = "javascript", script = "_this.price * _this.quantity >= 10000")
 public class Item {
 
 	private Long id;
