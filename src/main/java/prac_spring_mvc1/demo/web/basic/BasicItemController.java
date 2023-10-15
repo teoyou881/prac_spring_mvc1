@@ -1,4 +1,4 @@
-package prac_spring_mvc1.demo.domain.web.basic;
+package prac_spring_mvc1.demo.web.basic;
 
 import jakarta.annotation.PostConstruct;
 import java.util.ArrayList;

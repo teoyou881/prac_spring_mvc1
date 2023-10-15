@@ -1,4 +1,4 @@
-package prac_spring_mvc1.demo.domain.web.basic;
+package prac_spring_mvc1.demo.web.basic;
 
 import jakarta.annotation.PostConstruct;
 import java.util.ArrayList;
@@ -24,8 +24,8 @@ import prac_spring_mvc1.demo.domain.item.ItemRepository;
 import prac_spring_mvc1.demo.domain.item.ItemType;
 import prac_spring_mvc1.demo.domain.item.SaveCheck;
 import prac_spring_mvc1.demo.domain.item.UpdateCheck;
-import prac_spring_mvc1.demo.domain.web.basic.form.ItemSaveForm;
-import prac_spring_mvc1.demo.domain.web.basic.form.ItemUpdateForm;
+import prac_spring_mvc1.demo.web.form.ItemSaveForm;
+import prac_spring_mvc1.demo.web.form.ItemUpdateForm;
 
 @Controller
 @Slf4j

@@ -1,4 +1,4 @@
-package prac_spring_mvc1.demo.domain.web.basic.form;
+package prac_spring_mvc1.demo.web.form;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;

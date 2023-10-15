@@ -1,4 +1,4 @@
-package prac_spring_mvc1.demo.domain.web.basic;
+package prac_spring_mvc1.demo.web.basic;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.validation.BindingResult;
@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import prac_spring_mvc1.demo.domain.web.basic.form.ItemSaveForm;
+import prac_spring_mvc1.demo.web.form.ItemSaveForm;
 
 @Slf4j
 @RestController
