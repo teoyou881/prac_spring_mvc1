@@ -2,61 +2,54 @@
 <html>
 <head>
 	<meta charset = "utf-8">
-	<link th:href = "@{/css/bootstrap.min.css}"
-	      href = "../css/bootstrap.min.css"
-	      rel = "stylesheet">
-	<style> .container {
-		max-width: 560px;
-	} </style>
+	<link href = "../css/bootstrap.min.css" rel = "stylesheet" th:href = "@{/css/bootstrap.min.css}">
+	<style>
+		.container {
+			max-width: 560px;
+		}
+		
+		.field-error {
+			border-color: #dc3333;
+			color: #dc3333
+		}
+	</style>
 </head>
 <body>
 <div class = "container">
 	<div class = "py-5 text-center"><h2>Edit Product Form</h2></div>
-	<form action = "item.html"
-	      th:action
-	      th:object = "${item}"
-	      method = "post">
+	<form action = "item.html" method = "post" th:action th:object = "${item}">
+		<div th:if = "${#fields.hasGlobalErrors}">
+			<p class = "field-error" th:each = "err : ${#fields.globalErrors()}" th:text = "${err}">
+				error messages </p>
+		</div>
 		<div>
 			<label for = "id">Product ID</label>
-			<input type = "text"
-			       class = "form-control"
-			       th:field = "*{id}"
-			       readonly>
+			<input class = "form-control" readonly th:field = "*{id}" type = "text">
 		</div>
 		<div>
 			
 			<label for = "name">Name</label>
-			<input type = "text"
-			       class = "form-control"
-			       th:field = "*{name}"
-			>
+			<input class = "form-control" th:field = "*{name}" type = "text">
 		</div>
+		<p th:class = "field-error" th:errors = "*{name}"></p>
 		<div>
 			<label for = "price">Price</label>
-			<input type = "text"
-			       class = "form-control"
-			       th:field = "*{price}"
-			       >
+			<input class = "form-control" th:field = "*{price}" type = "text">
 		</div>
+		<p th:class = "field-error" th:errors = "*{price}"></p>
 		<div>
 			<label for = "quantity">Quantity</label>
-			<input type = "text"
-			       class = "form-control"
-			       th:field = "*{quantity}"
-			       >
+			<input class = "form-control" th:field = "*{quantity}" type = "text">
 		</div>
+		<p th:class = "field-error" th:errors = "*{quantity}"></p>
 		
 		<hr class = "my-4">
 		<div>Sales status</div>
 		<div>
 			<div class = "form-check">
-				<input type = "checkbox"
-				       id = "open"
-				       name = "open"
-				       class = "form-check-input"
-				       th:field = "*{open}">
-				<label for = "open"
-				       class = "form-check-label">Sales status
+				<input class = "form-check-input" id = "open" name = "open" th:field = "*{open}"
+				       type = "checkbox">
+				<label class = "form-check-label" for = "open">Sales status
 				</label>
 			</div>
 		</div>
@@ -64,16 +57,11 @@
 		<hr class = "my-4">
 		<div>
 			<div>Region</div>
-			<div th:each = "region : ${regions}"
-			     class = "form-check form-check-inline">
-				<input type = "checkbox"
-				       th:field = "*{regions}"
-				       th:value = "${region.key}"
-				       class = "form-check-input">
-				<label
-					th:for="${#ids.prev('regions')}"
-					th:text = "${region.value}"
-					class = "form-check-label">Seoul
+			<div class = "form-check form-check-inline" th:each = "region : ${regions}">
+				<input class = "form-check-input" th:field = "*{regions}" th:value = "${region.key}"
+				       type = "checkbox">
+				<label class = "form-check-label" th:for = "${#ids.prev('regions')}"
+				       th:text = "${region.value}">Seoul
 				</label>
 			</div>
 		</div>
@@ -82,16 +70,12 @@
 		<hr class = "my-4">
 		<div>
 			<div>Category</div>
-			<div th:each = "type : ${itemTypes}"
-			     class = "form-check form-check-inline">
-				<input type = "radio"
-				       th:field = "*{itemType}"
-				       th:value = "${type.name()}"
+			<div class = "form-check form-check-inline" th:each = "type : ${itemTypes}">
+				<input class = "form-check-input" th:field = "*{itemType}" th:value = "${type.name()}"
 				       
-				       class = "form-check-input">
-				<label th:for = "${#ids.prev('itemType')}"
-				       th:text = "${type.description}"
-				       class = "form-check-label"> BOOK
+				       type = "radio">
+				<label class = "form-check-label" th:for = "${#ids.prev('itemType')}"
+				       th:text = "${type.description}"> BOOK
 				</label>
 			</div>
 		</div>
@@ -100,24 +84,21 @@
 		<hr class = "my-4">
 		<div>
 			<div>Delivery</div>
-			<select th:field = "*{deliveryCode}" class = "form-select">
+			<select class = "form-select" th:field = "*{deliveryCode}">
 				<option value = "">==Choose a shipping method==</option>
-				<option th:each = "deliveryCode : ${deliveryCodes}"
-				        th:value = "${deliveryCode.code}"
-				        th:text = "${deliveryCode.displayName}">FAST
+				<option th:each = "deliveryCode : ${deliveryCodes}" th:text = "${deliveryCode.displayName}"
+				        th:value = "${deliveryCode.code}">FAST
 				</option>
 			</select>
 		</div>
 		
 		<div class = "row">
 			<div class = "col">
-				<button class = "w-100 btn btn-primary btn-lg"
-				        type = "submit">Save
+				<button class = "w-100 btn btn-primary btn-lg" type = "submit">Save
 				</button>
 			</div>
 			<div class = "col">
-				<button class = "w-100 btn btn-secondary btn-lg"
-				        onclick = "location.href='item.html'"
+				<button class = "w-100 btn btn-secondary btn-lg" onclick = "location.href='item.html'"
 				        th:onclick = "|location.href='@{/basic/items/{itemId} (itemId=${item.id})}'|"
 				        type = "button">Cancel
 				</button>

@@ -110,7 +110,21 @@ public class BeanController {
 		return "basic/editForm";
 	}
 
-	@PostMapping ("/{itemId}/edit") public String edit (@PathVariable Long itemId, Item item) {
+	@PostMapping ("/{itemId}/edit")
+	public String edit (@PathVariable Long itemId, @Validated Item item, BindingResult bindingResult) {
+
+		if (item.getPrice () != null && item.getQuantity () != null) {
+			int resultPrice = item.getPrice () * item.getQuantity ();
+			if (resultPrice < 10000) {
+				bindingResult.reject ("totalPriceMin", new Object[]{10000, resultPrice}, null);
+			}
+		}
+
+		if (bindingResult.hasErrors ()) {
+			log.info ("errors={}", bindingResult);
+			return "basic/editForm";
+		}
+
 		Item findItem = itemRepository.findById (itemId);
 		itemRepository.update (itemId, item);
 		return "redirect:/basic/items/{itemId}";
