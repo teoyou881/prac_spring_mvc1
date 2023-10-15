@@ -1,5 +1,7 @@
 package prac_spring_mvc1.demo.web.login;
 
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -23,7 +25,8 @@ public class LoginController {
 	}
 
 	@PostMapping ("/login")
-	public String login (@Valid @ModelAttribute LoginForm form, BindingResult bindingResult) {
+	public String login (@Valid @ModelAttribute LoginForm form, BindingResult bindingResult,
+	                     HttpServletResponse response) {
 		if (bindingResult.hasErrors ()) {
 			return "login/loginForm";
 		}
@@ -35,9 +38,10 @@ public class LoginController {
 			bindingResult.reject ("loginFail", "Id or password is not matched");
 			return "login/loginForm";
 		}
-//TODO
-// login success
 
+		// If you don't give time info to the cookie, it will be a session cookie. (When browser is closed, it will be deleted.)
+		Cookie memberIdCookie = new Cookie ("memberId", String.valueOf (loginMember.getId ()));
+		response.addCookie (memberIdCookie);
 		return "redirect:/";
 	}
 }
