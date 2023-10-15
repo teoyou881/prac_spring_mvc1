@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import prac_spring_mvc1.demo.web.form.ItemSaveForm;
+import prac_spring_mvc1.demo.web.item.form.ItemSaveForm;
 
 @Slf4j
 @RestController

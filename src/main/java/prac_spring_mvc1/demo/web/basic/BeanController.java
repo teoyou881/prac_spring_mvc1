@@ -23,8 +23,8 @@ import prac_spring_mvc1.demo.domain.item.ItemRepository;
 import prac_spring_mvc1.demo.domain.item.ItemType;
 import prac_spring_mvc1.demo.domain.item.SaveCheck;
 import prac_spring_mvc1.demo.domain.item.UpdateCheck;
-import prac_spring_mvc1.demo.web.form.ItemSaveForm;
-import prac_spring_mvc1.demo.web.form.ItemUpdateForm;
+import prac_spring_mvc1.demo.web.item.form.ItemSaveForm;
+import prac_spring_mvc1.demo.web.item.form.ItemUpdateForm;
 
 @Controller
 @Slf4j
