@@ -22,6 +22,8 @@ import prac_spring_mvc1.demo.domain.item.DeliveryCode;
 import prac_spring_mvc1.demo.domain.item.Item;
 import prac_spring_mvc1.demo.domain.item.ItemRepository;
 import prac_spring_mvc1.demo.domain.item.ItemType;
+import prac_spring_mvc1.demo.domain.item.SaveCheck;
+import prac_spring_mvc1.demo.domain.item.UpdateCheck;
 
 @Controller
 @Slf4j
@@ -76,10 +78,39 @@ public class BeanController {
 //    This is where supports() is used.
 //    Here, supports(Item.class) is called, and since the result is true, validate() of ItemValidator is called.
 //    Translated with www.DeepL.com/Translator (free version)
-	@PostMapping ("/add")
-	public String addItemV (
+	//@PostMapping ("/add")
+	public String addItemV1 (
 		//BindingResult The position of the bindingResult parameter must be after the @ModelAttribute Item item.
 		@Validated Item item, BindingResult bindingResult, RedirectAttributes redirectAttributes) {
+
+		if (item.getPrice () != null && item.getQuantity () != null) {
+			int resultPrice = item.getPrice () * item.getQuantity ();
+			if (resultPrice < 10000) {
+				bindingResult.reject ("totalPriceMin", new Object[]{10000, resultPrice}, null);
+			}
+		}
+
+		if (bindingResult.hasErrors ()) {
+			log.info ("errors={}", bindingResult);
+			return "basic/addForm";
+		}
+
+		// success case below
+
+		Item savedItem = itemRepository.save (item);
+		/* itemid should be replaced with the name of the variable in the path.
+		 * the thing like status which is not replaced with anything must be added as query parameter.*/
+		redirectAttributes.addAttribute ("itemId", savedItem.getId ());
+		redirectAttributes.addAttribute ("status", true);
+		return "redirect:/basic/items/{itemId}";
+		///basic/items/3?status=true
+	}
+
+	@PostMapping ("/add")
+	public String addItemV2 (
+		//BindingResult The position of the bindingResult parameter must be after the @ModelAttribute Item item.
+		@Validated (SaveCheck.class) Item item, BindingResult bindingResult,
+		RedirectAttributes redirectAttributes) {
 
 		if (item.getPrice () != null && item.getQuantity () != null) {
 			int resultPrice = item.getPrice () * item.getQuantity ();
@@ -110,8 +141,29 @@ public class BeanController {
 		return "basic/editForm";
 	}
 
+	//@PostMapping ("/{itemId}/edit")
+	public String editV1 (@PathVariable Long itemId, @Validated Item item, BindingResult bindingResult) {
+
+		if (item.getPrice () != null && item.getQuantity () != null) {
+			int resultPrice = item.getPrice () * item.getQuantity ();
+			if (resultPrice < 10000) {
+				bindingResult.reject ("totalPriceMin", new Object[]{10000, resultPrice}, null);
+			}
+		}
+
+		if (bindingResult.hasErrors ()) {
+			log.info ("errors={}", bindingResult);
+			return "basic/editForm";
+		}
+
+		Item findItem = itemRepository.findById (itemId);
+		itemRepository.update (itemId, item);
+		return "redirect:/basic/items/{itemId}";
+	}
+
 	@PostMapping ("/{itemId}/edit")
-	public String edit (@PathVariable Long itemId, @Validated Item item, BindingResult bindingResult) {
+	public String editV2 (@PathVariable Long itemId, @Validated (UpdateCheck.class) Item item,
+	                      BindingResult bindingResult) {
 
 		if (item.getPrice () != null && item.getQuantity () != null) {
 			int resultPrice = item.getPrice () * item.getQuantity ();
