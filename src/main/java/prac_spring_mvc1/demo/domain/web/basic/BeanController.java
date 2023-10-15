@@ -24,6 +24,8 @@ import prac_spring_mvc1.demo.domain.item.ItemRepository;
 import prac_spring_mvc1.demo.domain.item.ItemType;
 import prac_spring_mvc1.demo.domain.item.SaveCheck;
 import prac_spring_mvc1.demo.domain.item.UpdateCheck;
+import prac_spring_mvc1.demo.domain.web.basic.form.ItemSaveForm;
+import prac_spring_mvc1.demo.domain.web.basic.form.ItemUpdateForm;
 
 @Controller
 @Slf4j
@@ -106,7 +108,7 @@ public class BeanController {
 		///basic/items/3?status=true
 	}
 
-	@PostMapping ("/add")
+	//@PostMapping ("/add")
 	public String addItemV2 (
 		//BindingResult The position of the bindingResult parameter must be after the @ModelAttribute Item item.
 		@Validated (SaveCheck.class) Item item, BindingResult bindingResult,
@@ -135,6 +137,37 @@ public class BeanController {
 		///basic/items/3?status=true
 	}
 
+	@PostMapping ("/add")
+	public String addItemV3 (
+		//BindingResult The position of the bindingResult parameter must be after the @ModelAttribute Item item.
+		@Validated @ModelAttribute ("item") ItemSaveForm form, BindingResult bindingResult,
+		RedirectAttributes redirectAttributes) {
+
+		if (form.getPrice () != null && form.getQuantity () != null) {
+			int resultPrice = form.getPrice () * form.getQuantity ();
+			if (resultPrice < 10000) {
+				bindingResult.reject ("totalPriceMin", new Object[]{10000, resultPrice}, null);
+			}
+		}
+
+		if (bindingResult.hasErrors ()) {
+			log.info ("errors={}", bindingResult);
+			return "basic/addForm";
+		}
+
+		// success case below
+		Item item = new Item (form.getName (), form.getPrice (), form.getQuantity ());
+		Item savedItem = itemRepository.save (item);
+		/* itemid should be replaced with the name of the variable in the path.
+		 * the thing like status which is not replaced with anything must be added as query parameter.*/
+		redirectAttributes.addAttribute ("itemId", savedItem.getId ());
+		redirectAttributes.addAttribute ("status", true);
+		return "redirect:/basic/items/{itemId}";
+		///basic/items/3?status=true
+	}
+
+
+
 	@GetMapping ("/{itemId}/edit") public String editForm (@PathVariable Long itemId, Model model) {
 		Item item = itemRepository.findById (itemId);
 		model.addAttribute ("item", item);
@@ -161,7 +194,7 @@ public class BeanController {
 		return "redirect:/basic/items/{itemId}";
 	}
 
-	@PostMapping ("/{itemId}/edit")
+	//	@PostMapping ("/{itemId}/edit")
 	public String editV2 (@PathVariable Long itemId, @Validated (UpdateCheck.class) Item item,
 	                      BindingResult bindingResult) {
 
@@ -177,6 +210,28 @@ public class BeanController {
 			return "basic/editForm";
 		}
 
+		Item findItem = itemRepository.findById (itemId);
+		itemRepository.update (itemId, item);
+		return "redirect:/basic/items/{itemId}";
+	}
+
+	@PostMapping ("/{itemId}/edit")
+	public String editV3 (@PathVariable Long itemId, @Validated @ModelAttribute ("item") ItemUpdateForm form,
+	                      BindingResult bindingResult) {
+
+		if (form.getPrice () != null && form.getQuantity () != null) {
+			int resultPrice = form.getPrice () * form.getQuantity ();
+			if (resultPrice < 10000) {
+				bindingResult.reject ("totalPriceMin", new Object[]{10000, resultPrice}, null);
+			}
+		}
+
+		if (bindingResult.hasErrors ()) {
+			log.info ("errors={}", bindingResult);
+			return "basic/editForm";
+		}
+
+		Item item = new Item (form.getId (), form.getName (), form.getPrice (), form.getQuantity ());
 		Item findItem = itemRepository.findById (itemId);
 		itemRepository.update (itemId, item);
 		return "redirect:/basic/items/{itemId}";
