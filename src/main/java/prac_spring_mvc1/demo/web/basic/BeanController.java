@@ -1,6 +1,5 @@
 package prac_spring_mvc1.demo.web.basic;
 
-import jakarta.annotation.PostConstruct;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -236,11 +235,4 @@ public class BeanController {
 		itemRepository.update (itemId, item);
 		return "redirect:/basic/items/{itemId}";
 	}
-
-	//data for test
-	@PostConstruct public void init () {
-		itemRepository.save (new Item ("A", 1, 100));
-		itemRepository.save (new Item ("B", 2, 200));
-	}
-
 }
