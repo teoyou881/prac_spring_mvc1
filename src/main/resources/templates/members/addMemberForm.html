@@ -1,0 +1,58 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+	<meta charset="utf-8">
+	<link href="../css/bootstrap.min.css" rel="stylesheet" th:href="@{/css/bootstrap.min.css}">
+	<style> .container {
+		max-width: 560px;
+	}
+	
+	.field-error {
+		border-color: #dc3545;
+		color: #dc3545;
+	} </style>
+</head>
+<body>
+<div class="container">
+	<div class="py-5 text-center">
+		<h2>Sign Up</h2>
+	</div>
+	<h4 class="mb-3">User Info</h4>
+	<form action="" method="post" th:action th:object="${member}">
+		<div th:if="${#fields.hasGlobalErrors()}">
+			<p class="field-error" th:each="err : ${#fields.globalErrors()}" th:text="${err}">
+				Global errors
+			</p>
+		</div>
+		<div>
+			<label for="loginId">Login ID</label>
+			<input class="form-control" id="loginId" th:errorclass="field-error"
+			       th:field="*{loginId}" type="text">
+			<div class="field-error" th:errors="*{loginId}" />
+		</div>
+		<div>
+			<label for="password">Password</label>
+			<input class="form-control" id="password" th:errorclass="field-error"
+			       th:field="*{password}" type="password">
+			<div class="field-error" th:errors="*{password}" />
+		</div>
+		<div>
+			<label for="name">Name</label>
+			<input class="form-control" id="name" th:errorclass="field-error" th:field="*{name}"
+			       type="text">
+			<div class="field-error" th:errors="*{name}" />
+		</div>
+		<hr class="my-4">
+		<div class="row">
+			<div class="col">
+				<button class="w-100 btn btn-primary btn-lg" type="submit">Sign Up</button>
+			</div>
+			<div class="col">
+				<button class="w-100 btn btn-secondary btn-lg" onclick="location.href='items.html'"
+				        th:onclick="|location.href='@{/}'|" type="button">Cancel
+				</button>
+			</div>
+		</div>
+	</form>
+</div> <!-- /container --> </body>
+</html>
