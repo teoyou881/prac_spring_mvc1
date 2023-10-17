@@ -1,6 +1,7 @@
 package prac_spring_mvc1.demo.web;
 
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Controller;
@@ -39,7 +40,7 @@ public class HomeController {
 		return "members/loginHome";
 	}
 
-	@GetMapping ("/")
+	//	@GetMapping ("/")
 	public String homeLoginV2 (HttpServletRequest request, Model model) {
 
 		Member member = (Member) sessionManager.getSession (request);
@@ -51,4 +52,24 @@ public class HomeController {
 		model.addAttribute ("member", member);
 		return "members/loginHome";
 	}
+
+	@GetMapping ("/")
+	public String homeLoginV3 (HttpServletRequest request, Model model) {
+
+		HttpSession session = request.getSession (false);
+		if (session == null) {
+			return "basic/home";
+		}
+
+		Member loginMember = (Member) session.getAttribute (SessionConst.LOGIN_MEMBER);
+
+		// If there is no user data in the session, it is not logged in.
+		if (loginMember == null) {
+			return "basic/home";
+		}
+
+		model.addAttribute ("member", loginMember);
+		return "members/loginHome";
+	}
 }
+

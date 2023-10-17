@@ -3,6 +3,7 @@ package prac_spring_mvc1.demo.web.login;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -13,6 +14,7 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import prac_spring_mvc1.demo.domain.login.LoginService;
 import prac_spring_mvc1.demo.domain.member.Member;
+import prac_spring_mvc1.demo.web.SessionConst;
 import prac_spring_mvc1.demo.web.session.SessionManager;
 
 @Slf4j
@@ -54,8 +56,30 @@ public class LoginController {
 		return "redirect:/";
 	}
 
-	@PostMapping ("/login")
+	//	@PostMapping ("/login")
 	public String loginV2 (@Valid @ModelAttribute LoginForm form, BindingResult bindingResult,
+	                       HttpServletResponse response, HttpServletRequest request) {
+		if (bindingResult.hasErrors ()) {
+			return "login/loginForm";
+		}
+		Member loginMember = loginService.login (form.getLoginId (), form.getPassword ());
+
+		if (loginMember == null) {
+			// global error
+			bindingResult.reject ("loginFail", "Id or password is not matched");
+			return "login/loginForm";
+		}
+
+		// If there is a session, return it. If not, create a new session.
+		HttpSession session = request.getSession ();
+		// save login member info in session
+		session.setAttribute (SessionConst.LOGIN_MEMBER, loginMember);
+
+		return "redirect:/";
+	}
+
+	@PostMapping ("/login")
+	public String loginV3 (@Valid @ModelAttribute LoginForm form, BindingResult bindingResult,
 	                       HttpServletResponse response) {
 		if (bindingResult.hasErrors ()) {
 			return "login/loginForm";
@@ -78,9 +102,19 @@ public class LoginController {
 		return "redirect:/";
 	}
 
-	@PostMapping ("/logout")
+	//	@PostMapping ("/logout")
 	public String logoutV2 (HttpServletRequest request) {
 		sessionManager.expire (request);
+		return "redirect:/";
+	}
+
+	@PostMapping ("/logout")
+	public String logoutV3 (HttpServletRequest request) {
+		HttpSession session = request.getSession (false);
+		if (session != null) {
+			// delete session
+			session.invalidate ();
+		}
 		return "redirect:/";
 	}
 }
