@@ -1,6 +1,7 @@
 package prac_spring_mvc1.demo.web.login;
 
 import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -12,6 +13,7 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import prac_spring_mvc1.demo.domain.login.LoginService;
 import prac_spring_mvc1.demo.domain.member.Member;
+import prac_spring_mvc1.demo.web.session.SessionManager;
 
 @Slf4j
 @Controller
@@ -19,6 +21,7 @@ import prac_spring_mvc1.demo.domain.member.Member;
 public class LoginController {
 
 	private final LoginService loginService;
+	private final SessionManager sessionManager;
 
 	private static void expireCookie (HttpServletResponse response, String cookieName) {
 		Cookie cookie = new Cookie (cookieName, null);
@@ -30,9 +33,9 @@ public class LoginController {
 		return "login/loginForm";
 	}
 
-	@PostMapping ("/login")
-	public String login (@Valid @ModelAttribute LoginForm form, BindingResult bindingResult,
-	                     HttpServletResponse response) {
+	//	@PostMapping ("/login")
+	public String loginV1 (@Valid @ModelAttribute LoginForm form, BindingResult bindingResult,
+	                       HttpServletResponse response) {
 		if (bindingResult.hasErrors ()) {
 			return "login/loginForm";
 		}
@@ -51,9 +54,33 @@ public class LoginController {
 		return "redirect:/";
 	}
 
-	@PostMapping ("/logout")
-	public String logout (HttpServletResponse response) {
+	@PostMapping ("/login")
+	public String loginV2 (@Valid @ModelAttribute LoginForm form, BindingResult bindingResult,
+	                       HttpServletResponse response) {
+		if (bindingResult.hasErrors ()) {
+			return "login/loginForm";
+		}
+		Member loginMember = loginService.login (form.getLoginId (), form.getPassword ());
+
+		if (loginMember == null) {
+			// global error
+			bindingResult.reject ("loginFail", "Id or password is not matched");
+			return "login/loginForm";
+		}
+
+		sessionManager.createSession (loginMember, response);
+		return "redirect:/";
+	}
+
+	//	@PostMapping ("/logout")
+	public String logoutV1 (HttpServletResponse response) {
 		expireCookie (response, "memberId");
+		return "redirect:/";
+	}
+
+	@PostMapping ("/logout")
+	public String logoutV2 (HttpServletRequest request) {
+		sessionManager.expire (request);
 		return "redirect:/";
 	}
 }
