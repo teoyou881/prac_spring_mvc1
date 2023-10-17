@@ -56,8 +56,27 @@ public class LoginController {
 		return "redirect:/";
 	}
 
+
 	//	@PostMapping ("/login")
 	public String loginV2 (@Valid @ModelAttribute LoginForm form, BindingResult bindingResult,
+	                       HttpServletResponse response) {
+		if (bindingResult.hasErrors ()) {
+			return "login/loginForm";
+		}
+		Member loginMember = loginService.login (form.getLoginId (), form.getPassword ());
+
+		if (loginMember == null) {
+			// global error
+			bindingResult.reject ("loginFail", "Id or password is not matched");
+			return "login/loginForm";
+		}
+
+		sessionManager.createSession (loginMember, response);
+		return "redirect:/";
+	}
+
+	@PostMapping ("/login")
+	public String loginV3 (@Valid @ModelAttribute LoginForm form, BindingResult bindingResult,
 	                       HttpServletResponse response, HttpServletRequest request) {
 		if (bindingResult.hasErrors ()) {
 			return "login/loginForm";
@@ -75,24 +94,6 @@ public class LoginController {
 		// save login member info in session
 		session.setAttribute (SessionConst.LOGIN_MEMBER, loginMember);
 
-		return "redirect:/";
-	}
-
-	@PostMapping ("/login")
-	public String loginV3 (@Valid @ModelAttribute LoginForm form, BindingResult bindingResult,
-	                       HttpServletResponse response) {
-		if (bindingResult.hasErrors ()) {
-			return "login/loginForm";
-		}
-		Member loginMember = loginService.login (form.getLoginId (), form.getPassword ());
-
-		if (loginMember == null) {
-			// global error
-			bindingResult.reject ("loginFail", "Id or password is not matched");
-			return "login/loginForm";
-		}
-
-		sessionManager.createSession (loginMember, response);
 		return "redirect:/";
 	}
 

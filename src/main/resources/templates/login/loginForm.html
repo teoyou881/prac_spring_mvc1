@@ -18,7 +18,7 @@
 	<div class="py-5 text-center">
 		<h2>Login</h2>
 	</div>
-	<form action="/members/add" method="post" th:action th:object="${loginForm}">
+	<form action="/members/login" method="post" th:action th:object="${loginForm}">
 		<div th:if="${#fields.hasGlobalErrors()}">
 			<p class="field-error" th:each="err : ${#fields.globalErrors()}" th:text="${err}">
 				Global errors

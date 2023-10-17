@@ -17,7 +17,7 @@ public class SessionManager {
 
 	//	create a session
 	public void createSession (Object value, HttpServletResponse response) {
-		// craete session id, save value in session store
+		// create session id, save value in session store
 		String sessionId = UUID.randomUUID ().toString ();
 		sessionStore.put (sessionId, value);
 
