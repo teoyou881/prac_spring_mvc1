@@ -20,6 +20,12 @@ public class LoginController {
 
 	private final LoginService loginService;
 
+	private static void expireCookie (HttpServletResponse response, String cookieName) {
+		Cookie cookie = new Cookie (cookieName, null);
+		cookie.setMaxAge (0);
+		response.addCookie (cookie);
+	}
+
 	@GetMapping ("/login") public String loginForm (@ModelAttribute ("loginForm") LoginForm form) {
 		return "login/loginForm";
 	}
@@ -42,6 +48,12 @@ public class LoginController {
 		// If you don't give time info to the cookie, it will be a session cookie. (When browser is closed, it will be deleted.)
 		Cookie memberIdCookie = new Cookie ("memberId", String.valueOf (loginMember.getId ()));
 		response.addCookie (memberIdCookie);
+		return "redirect:/";
+	}
+
+	@PostMapping ("/logout")
+	public String logout (HttpServletResponse response) {
+		expireCookie (response, "memberId");
 		return "redirect:/";
 	}
 }
