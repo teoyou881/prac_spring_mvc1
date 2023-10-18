@@ -77,11 +77,11 @@ public class LoginController {
 	}
 
 	//	@PostMapping ("/login")
-	public String loginV3 (@Valid @ModelAttribute LoginForm form, BindingResult bindingResult,
-	                       HttpServletResponse response, HttpServletRequest request) {
-		if (bindingResult.hasErrors ()) {
-			return "login/loginForm";
-		}
+	public String loginV3 (@Valid @ModelAttribute LoginForm form,
+	                       BindingResult bindingResult, HttpServletRequest request) {
+
+		if (bindingResult.hasErrors ()) {return "login/loginForm";}
+
 		Member loginMember = loginService.login (form.getLoginId (), form.getPassword ());
 
 		if (loginMember == null) {

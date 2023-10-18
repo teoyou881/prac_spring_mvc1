@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.SessionAttribute;
 import prac_spring_mvc1.demo.domain.member.Member;
 import prac_spring_mvc1.demo.domain.member.MemberRepository;
+import prac_spring_mvc1.demo.web.argumentResolver.Login;
 import prac_spring_mvc1.demo.web.session.SessionManager;
 
 @Slf4j
@@ -69,10 +70,19 @@ public class HomeController {
 		return "members/loginHome";
 	}
 
-	@GetMapping ("/")
+	//	@GetMapping ("/")
 	public String homeLoginV3Spring (
 		@SessionAttribute (name = SessionConst.LOGIN_MEMBER, required = false) Member loginMember,
 		Model model) {
+		if (loginMember == null) {
+			return "basic/home";
+		}
+		model.addAttribute ("member", loginMember);
+		return "members/loginHome";
+	}
+
+	@GetMapping ("/")
+	public String homeLoginV3SpringArgumentResolver (@Login Member loginMember, Model model) {
 		if (loginMember == null) {
 			return "basic/home";
 		}
