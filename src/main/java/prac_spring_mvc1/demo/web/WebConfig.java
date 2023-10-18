@@ -3,11 +3,28 @@ package prac_spring_mvc1.demo.web;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import prac_spring_mvc1.demo.web.filter.LogFilter;
 import prac_spring_mvc1.demo.web.filter.LoginCheckFilter;
+import prac_spring_mvc1.demo.web.interceptor.LogInterceptor;
 
 @Configuration
-public class WebConfig {
+public class WebConfig implements WebMvcConfigurer {
+
+	/**
+	 * Add Spring MVC lifecycle interceptors for pre- and post-processing of controller method invocations and
+	 * resource handler requests. Interceptors can be registered to apply to all requests or be limited to a
+	 * subset of URL patterns.
+	 *
+	 * @param registry
+	 */
+	@Override public void addInterceptors (InterceptorRegistry registry) {
+		registry.addInterceptor (new LogInterceptor ())
+		        .order (1)
+		        .addPathPatterns ("/**")
+		        .excludePathPatterns ("/css/**", "/*.ico", "/error");
+	}
 
 	@Bean
 	public FilterRegistrationBean logFilter () {
